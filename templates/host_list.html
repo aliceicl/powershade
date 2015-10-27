@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ mytitle }}</title>
+<script type="text/javascript">
+  var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>        
+
+    <!-- Bootstrap Core CSS -->
+    <link rel=stylesheet type=text/css href="{{ url_for('static',filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
+
+   <!-- MetisMenu CSS -->
+   <link rel=stylesheet type=text/css href="{{ url_for('static',filename='bower_components/metisMenu/dist/metisMenu.min.css') }}">
+
+    <!-- Social Buttons CSS -->
+    <link rel=stylesheet type=text/css href="{{ url_for('static',filename='bower_components/bootstrap-social/bootstrap-social.css') }}">
+
+    <!-- DataTables CSS -->
+    <link rel=stylesheet type=text/css href="{{ url_for('static',filename='bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css') }}">
+
+    <!-- DataTables Responsive CSS -->
+    <link rel=stylesheet type=text/css href="{{ url_for('static',filename='bower_components/datatables-responsive/css/dataTables.responsive.css') }}">
+
+   <!-- Custom CSS -->
+   <link rel=stylesheet type=text/css href="{{ url_for('static',filename='dist/css/sb-admin-2.css') }}">
+
+   <!-- Custom Fonts -->
+   <link rel=stylesheet type=text/css href="{{ url_for('static',filename='bower_components/font-awesome/css/font-awesome.min.css') }}">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+       
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Search...">
+                                <span class="input-group-btn">
+                                <button class="btn btn-default" type="button">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            </div>
+                            <!-- /input-group -->
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-dashboard fa-fw"></i>Sensors</a>
+                        </li>
+                        <li>
+                            <a href="tables.html"><i class="fa fa-table fa-fw"></i>Logs</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+        <!-- Page Content -->
+		
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Sensors</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+				
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Sensor Control Panel
+                    </div>
+                    <div class="panel-body">
+                        <p>From Left to Right; Monitor,Block,PowerShell Call, and Beacon respectively</p>
+                      <form>
+                        <div class="form-group">
+                            <label>Sensor IP</label>
+                            <input class="form-control" type="text" name="sensorip" id="sensorip" />
+                            <div><p id="triggerResult" class="help-block">[PENDING]</p></div>
+                            <button type="button" id="monitorBtn" name="monitorBtn" class="btn btn-primary btn-circle"><i class="fa fa-list"></i>
+                            </button>
+                            <button type="button" id="blockBtn" name="blockBtn" class="btn btn-warning btn-circle"><i class="fa fa-times"></i>
+                            </button>
+                            <button type="button" id="callBtn" name="callBtn" class="btn btn-info btn-circle"><i class="fa fa-check"></i>
+                            </button>
+						    <button type="button" id="beaconBtn" name="beaconBtn" class="btn btn-danger btn-circle"><i class="fa fa-heart"></i>
+                            </button>				
+                        </div>
+					  </form>
+					</div>
+					<div class="table-responsive">
+	                    <table class="table" name="hosttbl" id="hosttbl">
+	                        <thead>
+	                            <tr>
+	                                <th>#</th>
+	                                <th>Host</th>
+	                                <th>IP</th>
+	                                <th>Status</th>
+									<th>TimeStamp</th>
+	                            </tr>
+	                        </thead>
+	                        <tbody>
+								<!-- sensors[host] = [ip,status,tstamp] -->
+								{% for key in mysensors.keys() %}
+								  {% if mysensors[key][1] == 'MONITOR' %}
+								    <tr class="info">
+								  {% elif mysensors[key][1] == 'BLOCK' %}
+								    <tr class="danger">
+								  {% else %}
+								  	<tr class="warning">
+								  {% endif %}
+								       <td>{{ loop.index }}</td>
+   	                                   <td>{{ key }}</td>
+   	                                   <td>{{ mysensors[key][0] }}</td>
+   	                                   <td>{{ mysensors[key][1] }}</td>
+   	                                   <td>{{ mysensors[key][2] }}</td>
+									</tr>
+								{% endfor %}
+	                       </tbody>
+	                    </table>
+	                </div>
+	                <!-- /.table-responsive -->
+                    <div class="panel-footer">
+                        **Refresh to update
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+	<script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="{{ url_for('static', filename='bower_components/metisMenu/dist/metisMenu.min.js') }}"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="{{ url_for('static', filename='bower_components/datatables/media/js/jquery.dataTables.min.js') }}"></script>
+	
+    <script src="{{ url_for('static', filename='bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js') }}"></script>
+
+    <!-- Custom Theme JavaScript -->
+   	<script src="{{ url_for('static', filename='dist/js/sb-admin-2.js') }}"></script>
+	<script type="text/javascript">
+	  $(function() {
+	    $("#monitorBtn").click(function() {
+			 console.log("Test")
+			 $('#triggerResult').text("Loading...");
+	         $.ajax({
+	            type: "GET",
+	            url: $SCRIPT_ROOT + "/chgmode",
+	            contentType: "application/json; charset=utf-8",
+	            data: { sensorip:$('#sensorip').val(), mode:'monitor' },
+	            success: function(data) {
+	                $('#triggerResult').text(data.response);
+	            }
+	        });     
+	    });
+	  });
+	  $(function() {
+	    $("#blockBtn").click(function() {
+			 $('#triggerResult').text("Loading...");
+	         $.ajax({
+	            type: "GET",
+	            url: $SCRIPT_ROOT + "/chgmode",
+	            contentType: "application/json; charset=utf-8",
+	            data: { sensorip:$('#sensorip').val(), mode:'block' },
+	            success: function(data) {
+	                console.log("Yes")
+					$('#triggerResult').text(data.response);
+					
+	            }
+	        });     
+	    });
+	  });
+	  $(function() {
+		$('#triggerResult').text("Loading...");
+	    $("#callBtn").click(function() {
+	         $.ajax({
+	            type: "GET",
+	            url: $SCRIPT_ROOT + "/chgmode",
+	            contentType: "application/json; charset=utf-8",
+	            data: { sensorip:$('#sensorip').val(), mode:'call' },
+	            success: function(data) {
+	                $('#triggerResult').text(data.response);
+	            }
+	        });     
+	    });
+	  });
+	  $(function() {
+		$('#triggerResult').text("Loading...");
+	    $("#beaconBtn").click(function() {
+	         $.ajax({
+	            type: "GET",
+	            url: $SCRIPT_ROOT + "/chgmode",
+	            contentType: "application/json; charset=utf-8",
+	            data: { sensorip:$('#sensorip').val(), mode:'beacon' },
+	            success: function(data) {
+	                $('#triggerResult').text(data.response);
+	            }
+	        });     
+	    });
+	  });
+	 </script>
+</body>
+
+</html>
